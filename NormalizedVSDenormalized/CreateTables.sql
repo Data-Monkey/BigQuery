@@ -1,5 +1,7 @@
-drop table testNormalisedDeNormalised.names;
-CREATE TABLE testNormalisedDeNormalised.names
+-- ----------------------------------------
+-- import a public set of names
+-- ----------------------------------------
+CREATE OR REPLACE TABLE testNormalisedDeNormalised.names
 (
   firstname STRING,
   gender STRING
@@ -9,10 +11,15 @@ SELECT distinct name as firstname, lower(gender) FROM `fh-bigquery.popular_names
 ;
 
 
--- ============ references
+-- ----------------------------------------
+-- create reference/dimension tables + data
+-- ----------------------------------------
 
-drop table testNormalisedDeNormalised.gender;
-CREATE TABLE testNormalisedDeNormalised.gender
+-- ----------------------------------------
+-- gender
+-- ----------------------------------------
+
+CREATE OR REPLACE TABLE testNormalisedDeNormalised.gender
 (
   genderId INT64,
   genderCode STRING,
@@ -27,9 +34,10 @@ UNNEST([
   (2,'f', 'female')
 ]);
 
--- ===========
-drop table testNormalisedDeNormalised.maritalStatus;
-CREATE TABLE testNormalisedDeNormalised.maritalStatus
+-- ----------------------------------------
+-- marital status
+-- ----------------------------------------
+CREATE OR REPLACE TABLE testNormalisedDeNormalised.maritalStatus
 (
   maritalStatusId INT64,
   maritalStatusCode STRING,
@@ -45,9 +53,10 @@ FROM UNNEST([
   (4, 'widowed','')
 ]);
 
---===========
-drop table testNormalisedDeNormalised.employmentStatus;
-CREATE TABLE testNormalisedDeNormalised.employmentStatus
+-- ----------------------------------------
+-- employment status
+-- ----------------------------------------
+CREATE OR REPLACE TABLE testNormalisedDeNormalised.employmentStatus
 (
   employmentStatusId INT64,
   employmentStatusCode STRING,
@@ -64,9 +73,10 @@ FROM UNNEST([
 ]);
 
 
---===========
-drop table testNormalisedDeNormalised.ageRange;
-CREATE TABLE testNormalisedDeNormalised.ageRange
+-- ----------------------------------------
+-- age range
+-- ----------------------------------------
+CREATE OR REPLACE TABLE testNormalisedDeNormalised.ageRange
 (
   ageRangeId INT64,
   ageRangeCode STRING,
@@ -90,8 +100,44 @@ FROM UNNEST([
   (10,'90-999',  '90 to 999',90,999)
 ]);
 
--- =====================================================================================
 
+-- ----------------------------------------
+-- create the 2 different empty tables
+-- ----------------------------------------
+
+CREATE OR REPLACE TABLE testNormalisedDeNormalised.personFlat
+(
+  personID STRING,
+  firstname STRING,
+  lastname STRING,
+  dateOfBirth DATE,
+  genderCode STRING,
+  genderName STRING,
+  ageRangeCode STRING,
+  ageRangeName STRING,
+  ageRangeStart int64,
+  ageRangeEnd int64,  
+  employmentStatusCode STRING,
+  employmentStatusName STRING,
+  maritalStatusCode STRING,
+  maritalStatus STRING  
+);
+
+CREATE OR REPLACE TABLE testNormalisedDeNormalised.personFlat
+(
+  personID STRING,
+  firstname STRING,
+  lastname STRING,
+  dateOfBirth DATE,
+  genderId INT64,
+  ageRangeId INT64,
+  employmentStatusId INT64,
+  maritalStatusId INT64,
+);
+
+-- ----------------------------------------
+-- creating the full person record in memory
+-- ----------------------------------------
 
 with personRecord as (
 SELECT 
