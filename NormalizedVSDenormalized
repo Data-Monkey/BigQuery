@@ -109,10 +109,10 @@ cross join testNormalisedDeNormalised.employmentStatus empl
 where rand() < 2000000 / 10000000000
 limit 1000
 ),
-personAge as (
-select  * from personRecord p
+personFull as (
+select  GENERATE_UUID() as personID, * from personRecord p
 inner join testNormalisedDeNormalised.ageRange age on date_diff(current_date(), p.DateOfBirth, year) between age.ageRangeStart and age.ageRangeEnd
 )
 
-select * from personAge 
+select * from personFull 
 limit 100
