@@ -1,0 +1,118 @@
+drop table testNormalisedDeNormalised.names;
+CREATE TABLE testNormalisedDeNormalised.names
+(
+  firstname STRING,
+  gender STRING
+);
+INSERT INTO testNormalisedDeNormalised.names
+SELECT distinct name as firstname, lower(gender) FROM `fh-bigquery.popular_names.usa_summary_1880_2015` limit 100000
+;
+
+
+-- ============ references
+
+drop table testNormalisedDeNormalised.gender;
+CREATE TABLE testNormalisedDeNormalised.gender
+(
+  genderId INT64,
+  genderCode STRING,
+  genderName STRING
+);
+
+insert into testNormalisedDeNormalised.gender (genderId, genderCode, genderName)
+SELECT *
+FROM 
+UNNEST([
+  (1,'m', 'male'),
+  (2,'f', 'female')
+]);
+
+-- ===========
+drop table testNormalisedDeNormalised.maritalStatus;
+CREATE TABLE testNormalisedDeNormalised.maritalStatus
+(
+  maritalStatusId INT64,
+  maritalStatusCode STRING,
+  maritalStatus STRING
+);
+
+insert into testNormalisedDeNormalised.maritalStatus
+SELECT *
+FROM UNNEST([
+  (1,'married', 'married'), 
+  (2,'single', 'single'),
+  (3,'divorced',''),
+  (4, 'widowed','')
+]);
+
+--===========
+drop table testNormalisedDeNormalised.employmentStatus;
+CREATE TABLE testNormalisedDeNormalised.employmentStatus
+(
+  employmentStatusId INT64,
+  employmentStatusCode STRING,
+  employmentStatusName STRING
+);
+
+insert into testNormalisedDeNormalised.employmentStatus
+SELECT *
+FROM UNNEST([
+  (1,'unemployed', 'unemployed'), 
+  (2,'self-employed', 'self-employed'),
+  (3,'full time','full time'),
+  (4, 'student','student')
+]);
+
+
+--===========
+drop table testNormalisedDeNormalised.ageRange;
+CREATE TABLE testNormalisedDeNormalised.ageRange
+(
+  ageRangeId INT64,
+  ageRangeCode STRING,
+  ageRangeName STRING,
+  ageRangeStart int64,
+  ageRangeEnd int64
+);
+
+insert into testNormalisedDeNormalised.ageRange
+SELECT *
+FROM UNNEST([
+  (1,'0-9',  '0 to 9',0,9),
+  (2,'10-19',  '10 to 19',10,19),
+  (3,'20-29',  '20 to 29',20,29),
+  (4,'30-39',  '30 to 39',30,39),
+  (5,'40-49',  '40 to 49',40,49),
+  (6,'50-59',  '50 to 59',50,59),
+  (7,'60-69',  '60 to 69',60,69),
+  (8,'70-79',  '70 to 79',70,79),
+  (9,'80-89',  '80 to 89',80,89),
+  (10,'90-999',  '90 to 999',90,999)
+]);
+
+-- =====================================================================================
+
+
+with personRecord as (
+SELECT 
+a.firstname, 
+b.firstname as lastname, 
+g.genderId, g.genderCode  , 
+DATE '1921-01-01' + cast(RAND()*30000 AS INT64) as DateOfBirth ,
+mar.*,
+empl.*
+FROM `testbigquery-294003.testNormalisedDeNormalised.names` a 
+inner join testNormalisedDeNormalised.gender g on g.genderCode = a.gender
+cross join `testbigquery-294003.testNormalisedDeNormalised.names` b 
+cross join testNormalisedDeNormalised.maritalStatus mar
+cross join testNormalisedDeNormalised.employmentStatus empl
+where rand() < 2000000 / 10000000000
+limit 1000
+),
+personAge as (
+select  * from personRecord p
+inner join testNormalisedDeNormalised.ageRange age on date_diff(current_date(), p.DateOfBirth, year) between age.ageRangeStart and age.ageRangeEnd
+)
+
+select * from personAge 
+limit 100
