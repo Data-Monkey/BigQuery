@@ -139,7 +139,7 @@ CREATE OR REPLACE TABLE testNormalisedDeNormalised.personNorm
 -- creating the full person record in memory
 -- ----------------------------------------
 
-with personRecord as (
+create temp table  personRecord as (
 SELECT 
 a.firstname, 
 b.firstname as lastname, 
@@ -154,11 +154,11 @@ cross join testNormalisedDeNormalised.maritalStatus mar
 cross join testNormalisedDeNormalised.employmentStatus empl
 where rand() < 2000000 / 10000000000
 limit 1000
-),
-personFull as (
+);
+create temp table personFull as (
 select  GENERATE_UUID() as personID, * from personRecord p
 inner join testNormalisedDeNormalised.ageRange age on date_diff(current_date(), p.DateOfBirth, year) between age.ageRangeStart and age.ageRangeEnd
-)
+);
 
 select * from personFull 
 limit 100
