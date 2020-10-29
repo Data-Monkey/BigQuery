@@ -123,7 +123,7 @@ CREATE OR REPLACE TABLE testNormalisedDeNormalised.personFlat
   maritalStatus STRING  
 );
 
-CREATE OR REPLACE TABLE testNormalisedDeNormalised.personFlat
+CREATE OR REPLACE TABLE testNormalisedDeNormalised.personNorm
 (
   personID STRING,
   firstname STRING,
