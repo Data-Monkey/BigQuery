@@ -101,9 +101,9 @@ g.genderId, g.genderCode  ,
 DATE '1921-01-01' + cast(RAND()*30000 AS INT64) as DateOfBirth ,
 mar.*,
 empl.*
-FROM `testbigquery-294003.testNormalisedDeNormalised.names` a 
+FROM testNormalisedDeNormalised.names a 
 inner join testNormalisedDeNormalised.gender g on g.genderCode = a.gender
-cross join `testbigquery-294003.testNormalisedDeNormalised.names` b 
+cross join testNormalisedDeNormalised.names b 
 cross join testNormalisedDeNormalised.maritalStatus mar
 cross join testNormalisedDeNormalised.employmentStatus empl
 where rand() < 2000000 / 10000000000
