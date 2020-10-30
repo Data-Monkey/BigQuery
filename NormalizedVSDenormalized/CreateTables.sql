@@ -201,4 +201,25 @@ from testNormalisedDeNormalised.personFull);
 
 select * from testNormalisedDeNormalised.personFlat limit 200;
 
+-- ------------------------------
+-- sample queries
+-- ------------------------------
+
+
+select count(*) from testNormalisedDeNormalised.personFlat
+where genderCode = 'm' 
+and ageRangeCode = '20-29'
+and employmentStatusCode = 'unemployed';
+-- prcessing data: 667.4 MB
+
+
+select count(*) 
+from testNormalisedDeNormalised.personNorm a
+inner join testNormalisedDeNormalised.gender g on a.genderId = g.genderId 
+inner join testNormalisedDeNormalised.ageRange ag on a.ageRangeId = ag.ageRangeId
+inner join testNormalisedDeNormalised.employmentStatus e on a.employmentStatusId = e.employmentStatusId
+where g.genderCode = 'm' 
+and ag.ageRangeCode = '20-29'
+and e.employmentStatusCode = 'unemployed'
+-- processing data : 732.3 MB
 
