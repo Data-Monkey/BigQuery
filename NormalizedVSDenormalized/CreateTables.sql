@@ -143,7 +143,7 @@ create temp table  personRecord as (
 SELECT 
 a.firstname, 
 b.firstname as lastname, 
-g.genderId, g.genderCode  , 
+g.*
 DATE '1921-01-01' + cast(RAND()*30000 AS INT64) as DateOfBirth ,
 mar.*,
 empl.*
@@ -163,4 +163,42 @@ inner join testNormalisedDeNormalised.ageRange age on date_diff(current_date(), 
 create or replace table testNormalisedDeNormalised.personFull as (select * from personTemp);
 
 
-select * from testNormalisedDeNormalised.personFull limit 200
+select * from testNormalisedDeNormalised.personFull limit 200;
+
+
+
+insert into testNormalisedDeNormalised.personNorm (
+select 
+  personID,
+  firstname,
+  lastname,
+  dateOfBirth,
+  genderId,
+  ageRangeId,
+  employmentStatusId,
+  maritalStatusId
+from testNormalisedDeNormalised.personFull);
+
+select * from testNormalisedDeNormalised.personNorm limit 200;
+
+insert into testNormalisedDeNormalised.personFlat (
+select 
+  personID ,
+  firstname ,
+  lastname ,
+  dateOfBirth ,
+  genderCode ,
+  genderName ,
+  ageRangeCode ,
+  ageRangeName ,
+  ageRangeStart ,
+  ageRangeEnd ,  
+  employmentStatusCode ,
+  employmentStatusName ,
+  maritalStatusCode ,
+  maritalStatus   
+from testNormalisedDeNormalised.personFull);
+
+select * from testNormalisedDeNormalised.personFlat limit 200;
+
+
