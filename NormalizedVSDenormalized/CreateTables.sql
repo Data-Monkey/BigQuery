@@ -220,6 +220,11 @@ inner join testNormalisedDeNormalised.ageRange ag on a.ageRangeId = ag.ageRangeI
 inner join testNormalisedDeNormalised.employmentStatus e on a.employmentStatusId = e.employmentStatusId
 where g.genderCode = 'm' 
 and ag.ageRangeCode = '20-29'
-and e.employmentStatusCode = 'unemployed'
+and e.employmentStatusCode = 'unemployed';
 -- processing data : 732.3 MB
 
+select  genderName, ageRangeName, employmentStatusName , count(*) as cnt
+from testNormalisedDeNormalised.personFlat
+where genderCode ='m'
+group by genderName, ageRangeName, employmentStatusName
+order by 1,2,3;
