@@ -152,13 +152,15 @@ inner join testNormalisedDeNormalised.gender g on g.genderCode = a.gender
 cross join testNormalisedDeNormalised.names b 
 cross join testNormalisedDeNormalised.maritalStatus mar
 cross join testNormalisedDeNormalised.employmentStatus empl
-where rand() < 2000000 / 10000000000
-limit 1000
+where rand() < 2000000 / 10000000000  
+limit 2000000 -- 2mil records
 );
-create temp table personFull as (
+create temp table personTemp as (
 select  GENERATE_UUID() as personID, * from personRecord p
 inner join testNormalisedDeNormalised.ageRange age on date_diff(current_date(), p.DateOfBirth, year) between age.ageRangeStart and age.ageRangeEnd
 );
 
-select * from personFull 
-limit 100
+create or replace table testNormalisedDeNormalised.personFull as (select * from personTemp);
+
+
+select * from testNormalisedDeNormalised.personFull limit 200
